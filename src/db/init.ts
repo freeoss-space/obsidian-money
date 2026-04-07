@@ -2,7 +2,7 @@ import initSqlJs from "sql.js";
 import { Database } from "./database";
 
 /**
- * Initialise a sql.js-backed Database with an explicit WASM binary.
+ * Initialize a sql.js-backed Database with an explicit WASM binary.
  *
  * Passing `wasmBinary` avoids the default file-system / network lookup
  * that fails when the plugin is loaded by BRAT (which only downloads
