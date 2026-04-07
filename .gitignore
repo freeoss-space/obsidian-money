@@ -1,0 +1,7 @@
+node_modules/
+main.js
+main.debug.js
+sql-wasm.wasm
+*.map
+.DS_Store
+coverage/
