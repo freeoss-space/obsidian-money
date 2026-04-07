@@ -1,6 +1,6 @@
 import { Plugin, Notice, WorkspaceLeaf } from "obsidian";
-import initSqlJs from "sql.js";
-import { Database } from "./db/database";
+import sqlWasmBinary from "../node_modules/sql.js/dist/sql-wasm.wasm";
+import { initSqlDatabase } from "./db/init";
 import { MoneyStore } from "./services/store";
 import { MoneySidebarView, MONEY_SIDEBAR_VIEW_TYPE } from "./views/sidebar-view";
 import { MoneyMainView, MONEY_MAIN_VIEW_TYPE } from "./views/main-view";
@@ -77,18 +77,14 @@ export default class MoneyPlugin extends Plugin {
 		const pluginDir = this.manifest.dir ?? "";
 		this.dbPath = `${pluginDir}/${this.settings.dbFileName}`;
 
-		const SQL = await initSqlJs();
-
-		let sqlDb;
+		let existingData: Uint8Array | undefined;
 		const exists = await this.app.vault.adapter.exists(this.dbPath);
 		if (exists) {
 			const buffer = await this.app.vault.adapter.readBinary(this.dbPath);
-			sqlDb = new SQL.Database(new Uint8Array(buffer));
-		} else {
-			sqlDb = new SQL.Database();
+			existingData = new Uint8Array(buffer);
 		}
 
-		const db = new Database(sqlDb);
+		const db = await initSqlDatabase(sqlWasmBinary, existingData);
 		this.store = new MoneyStore(db);
 
 		// Seed default categories
