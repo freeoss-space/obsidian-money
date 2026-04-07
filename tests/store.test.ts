@@ -390,3 +390,87 @@ describe("Store: Monthly summaries", () => {
 		expect(byCategory.get("uncategorized")).toBe(1000);
 	});
 });
+
+/* ───────────────────────────────────────
+   Store: Credit card monthly totals
+   ─────────────────────────────────────── */
+
+describe("Store: Credit card monthly totals", () => {
+	let bankId: string;
+	let ccId: string;
+
+	beforeEach(() => {
+		const bank = store.createAccount("Checking", "bank", "USD");
+		const cc = store.createAccount("Visa", "credit_card", "USD", 15);
+		bankId = bank.id;
+		ccId = cc.id;
+	});
+
+	it("computes monthly total for a credit card", () => {
+		store.createEntry({
+			accountId: ccId,
+			type: "expense",
+			amount: 3000,
+			description: "Coffee",
+			schedule: "single",
+			date: "2024-03-01",
+		});
+		store.createEntry({
+			accountId: ccId,
+			type: "expense",
+			amount: 7000,
+			description: "Dinner",
+			schedule: "single",
+			date: "2024-03-15",
+		});
+
+		const totals = store.getCreditCardMonthlyTotals("2024-03");
+		expect(totals.get(ccId)!.total).toBe(10000);
+		expect(totals.get(ccId)!.name).toBe("Visa");
+		expect(totals.get(ccId)!.statementDay).toBe(15);
+	});
+
+	it("returns zero for months with no expenses", () => {
+		const totals = store.getCreditCardMonthlyTotals("2024-03");
+		expect(totals.get(ccId)!.total).toBe(0);
+	});
+
+	it("does not count income or transfers as credit card expense", () => {
+		store.createEntry({
+			accountId: ccId,
+			type: "expense",
+			amount: 5000,
+			description: "Purchase",
+			schedule: "single",
+			date: "2024-03-01",
+		});
+		store.createEntry({
+			accountId: bankId,
+			toAccountId: ccId,
+			type: "transfer",
+			amount: 5000,
+			description: "CC payment",
+			schedule: "single",
+			date: "2024-03-15",
+		});
+
+		const totals = store.getCreditCardMonthlyTotals("2024-03");
+		// Only the expense counts, not the transfer
+		expect(totals.get(ccId)!.total).toBe(5000);
+	});
+
+	it("includes recurring credit card expenses", () => {
+		store.createEntry({
+			accountId: ccId,
+			type: "expense",
+			amount: 1500,
+			description: "Streaming",
+			schedule: "fixed",
+			date: "2024-01-01",
+			fixedInterval: "monthly",
+		});
+
+		const totals = store.getCreditCardMonthlyTotals("2024-06");
+		expect(totals.get(ccId)!.total).toBe(1500);
+	});
+});

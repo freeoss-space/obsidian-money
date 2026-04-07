@@ -83,7 +83,7 @@ export class Database {
 			"SELECT id, name, kind, currency, statement_day, created_at FROM accounts ORDER BY name",
 		);
 		if (!rows.length) return [];
-		return rows[0].values.map((r) => ({
+		return rows[0].values.map((r: unknown[]) => ({
 			id: r[0] as string,
 			name: r[1] as string,
 			kind: r[2] as AccountKind,
@@ -99,7 +99,7 @@ export class Database {
 			[kind],
 		);
 		if (!rows.length) return [];
-		return rows[0].values.map((r) => ({
+		return rows[0].values.map((r: unknown[]) => ({
 			id: r[0] as string,
 			name: r[1] as string,
 			kind: r[2] as AccountKind,
@@ -137,7 +137,7 @@ export class Database {
 			"SELECT id, name, icon, parent_id FROM categories ORDER BY name",
 		);
 		if (!rows.length) return [];
-		return rows[0].values.map((r) => ({
+		return rows[0].values.map((r: unknown[]) => ({
 			id: r[0] as string,
 			name: r[1] as string,
 			icon: r[2] as string,
@@ -238,7 +238,7 @@ export class Database {
 			[accountId, accountId],
 		);
 		if (!rows.length) return [];
-		return rows[0].values.map((r) => this.rowToEntry(r));
+		return rows[0].values.map((r: unknown[]) => this.rowToEntry(r));
 	}
 
 	getEntriesByMonth(month: string): Entry[] {
@@ -251,7 +251,7 @@ export class Database {
 			[month],
 		);
 		if (!rows.length) return [];
-		return rows[0].values.map((r) => this.rowToEntry(r));
+		return rows[0].values.map((r: unknown[]) => this.rowToEntry(r));
 	}
 
 	getAllEntries(): Entry[] {
@@ -261,7 +261,7 @@ export class Database {
 			 FROM entries ORDER BY date DESC`,
 		);
 		if (!rows.length) return [];
-		return rows[0].values.map((r) => this.rowToEntry(r));
+		return rows[0].values.map((r: unknown[]) => this.rowToEntry(r));
 	}
 
 	deleteEntry(id: EntityId): void {

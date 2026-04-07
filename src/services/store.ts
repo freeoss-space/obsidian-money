@@ -212,6 +212,32 @@ export class MoneyStore {
 		return map;
 	}
 
+	/**
+	 * Get monthly totals for each credit card.
+	 * Returns a map of credit card ID to total expenses for the month.
+	 * This is used to display credit card totals in the overview and
+	 * to automatically show them in bank account views.
+	 */
+	getCreditCardMonthlyTotals(month: string): Map<EntityId, { name: string; total: number; statementDay?: number }> {
+		const creditCards = this.getCreditCards();
+		const ledger = this.getLedgerForMonth(month);
+		const result = new Map<EntityId, { name: string; total: number; statementDay?: number }>();
+
+		for (const cc of creditCards) {
+			const ccRows = ledger.filter(
+				(r) => r.accountId === cc.id && r.type === "expense",
+			);
+			const total = ccRows.reduce((sum, r) => sum + r.amount, 0);
+			result.set(cc.id, {
+				name: cc.name,
+				total,
+				statementDay: cc.statementDay,
+			});
+		}
+
+		return result;
+	}
+
 	/* ── Private: entry expansion ─────── */
 
 	private expandEntry(entry: Entry, month: string): LedgerRow[] {
