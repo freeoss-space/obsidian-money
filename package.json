@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-money",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "A budgeting and financial organizer for Obsidian",
 	"main": "main.js",
 	"scripts": {
