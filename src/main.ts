@@ -59,6 +59,13 @@ export default class MoneyPlugin extends Plugin {
 			callback: () => this.openAddAccountModal(),
 		});
 
+		// Open sidebar when layout is ready
+		this.app.workspace.onLayoutReady(() => {
+			this.activateSidebar().catch((err) => {
+				console.error("Money: failed to activate sidebar", err);
+			});
+		});
+
 		// Auto-save periodically
 		this.registerInterval(
 			window.setInterval(() => this.persistData(), 60_000),

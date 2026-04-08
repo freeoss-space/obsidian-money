@@ -43,6 +43,9 @@ export class Workspace {
 	getLeaf(_newLeaf?: boolean | string): WorkspaceLeaf {
 		return new WorkspaceLeaf();
 	}
+	onLayoutReady(callback: () => void): void {
+		callback();
+	}
 }
 
 export class Vault {
