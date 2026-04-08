@@ -112,7 +112,7 @@ export default class MoneyPlugin extends Plugin {
 			this.app.workspace.revealLeaf(existing[0]);
 			return;
 		}
-		const leaf = this.app.workspace.getRightLeaf(false);
+		const leaf = this.app.workspace.getLeftLeaf(false);
 		if (!leaf) return;
 		await leaf.setViewState({
 			type: MONEY_SIDEBAR_VIEW_TYPE,
