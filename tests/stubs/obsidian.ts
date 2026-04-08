@@ -65,13 +65,89 @@ export class WorkspaceLeaf {
 	async setViewState(_state: { type: string; active: boolean }): Promise<void> {}
 }
 
+/**
+ * Augment HTMLElement with Obsidian's convenience helpers so that views
+ * written against the Obsidian API work in a test environment.
+ */
+function augmentElement(el: HTMLElement): HTMLElement {
+	const anyEl = el as Record<string, unknown>;
+
+	if (typeof anyEl.empty !== "function") {
+		anyEl.empty = function (this: HTMLElement) {
+			this.innerHTML = "";
+		};
+	}
+	if (typeof anyEl.addClass !== "function") {
+		anyEl.addClass = function (this: HTMLElement, ...classes: string[]) {
+			this.classList.add(...classes);
+		};
+	}
+	if (typeof anyEl.toggleClass !== "function") {
+		anyEl.toggleClass = function (this: HTMLElement, cls: string, force: boolean) {
+			this.classList.toggle(cls, force);
+		};
+	}
+	if (typeof anyEl.createDiv !== "function") {
+		anyEl.createDiv = function (
+			this: HTMLElement,
+			opts?: { cls?: string; text?: string; attr?: Record<string, string> },
+		): HTMLElement {
+			const div = document.createElement("div");
+			augmentElement(div);
+			if (opts?.cls) div.className = opts.cls;
+			if (opts?.text) div.textContent = opts.text;
+			if (opts?.attr) {
+				for (const [k, v] of Object.entries(opts.attr)) div.setAttribute(k, v);
+			}
+			this.appendChild(div);
+			return div;
+		};
+	}
+	if (typeof anyEl.createEl !== "function") {
+		anyEl.createEl = function (
+			this: HTMLElement,
+			tag: string,
+			opts?: { cls?: string; text?: string; attr?: Record<string, string> },
+		): HTMLElement {
+			const child = document.createElement(tag);
+			augmentElement(child);
+			if (opts?.cls) child.className = opts.cls;
+			if (opts?.text) child.textContent = opts.text;
+			if (opts?.attr) {
+				for (const [k, v] of Object.entries(opts.attr)) child.setAttribute(k, v);
+			}
+			this.appendChild(child);
+			return child;
+		};
+	}
+	if (typeof anyEl.createSpan !== "function") {
+		anyEl.createSpan = function (
+			this: HTMLElement,
+			opts?: { cls?: string; text?: string },
+		): HTMLElement {
+			const span = document.createElement("span");
+			augmentElement(span);
+			if (opts?.cls) span.className = opts.cls;
+			if (opts?.text) span.textContent = opts.text;
+			this.appendChild(span);
+			return span;
+		};
+	}
+
+	return el;
+}
+
 export class ItemView {
-	containerEl: HTMLElement = document.createElement("div");
+	containerEl: HTMLElement;
 	leaf: WorkspaceLeaf;
 	constructor(leaf: WorkspaceLeaf) {
 		this.leaf = leaf;
-		const child = document.createElement("div");
-		this.containerEl.appendChild(child);
+		this.containerEl = augmentElement(document.createElement("div"));
+		// Obsidian layout: children[0] = header bar, children[1] = content area
+		const header = augmentElement(document.createElement("div"));
+		const content = augmentElement(document.createElement("div"));
+		this.containerEl.appendChild(header);
+		this.containerEl.appendChild(content);
 	}
 	getViewType(): string {
 		return "";

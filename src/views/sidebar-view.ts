@@ -86,6 +86,11 @@ export class MoneySidebarView extends ItemView {
 			this.plugin.openMainView("charts");
 		});
 
+		// Checklist nav item
+		this.renderNavItem(contentEl, "Checklist", "list-checks", () => {
+			this.plugin.openMainView("checklist");
+		});
+
 		// Separator
 		contentEl.createDiv({ cls: "money-sidebar-separator" });
 

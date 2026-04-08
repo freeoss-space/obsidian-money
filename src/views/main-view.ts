@@ -4,7 +4,7 @@ import type { Account, LedgerRow, MonthSummary, Category, EntityId } from "../ty
 
 export const MONEY_MAIN_VIEW_TYPE = "money-main-view";
 
-export type MainViewMode = "overview" | "charts" | "account";
+export type MainViewMode = "overview" | "charts" | "account" | "checklist";
 
 export class MoneyMainView extends ItemView {
 	private plugin: MoneyPlugin;
@@ -65,6 +65,9 @@ export class MoneyMainView extends ItemView {
 				break;
 			case "account":
 				this.renderAccount(container);
+				break;
+			case "checklist":
+				this.renderChecklist(container);
 				break;
 		}
 	}
@@ -323,6 +326,18 @@ export class MoneyMainView extends ItemView {
 				text: "No transactions this month.",
 			});
 		}
+	}
+
+	/* ── Checklist ────────────────────── */
+
+	private renderChecklist(container: HTMLElement): void {
+		const header = container.createDiv({ cls: "money-view-header" });
+		header.createEl("h2", { text: "Checklist", cls: "money-view-title" });
+
+		container.createDiv({
+			cls: "money-empty",
+			text: "No checklist items yet.",
+		});
 	}
 
 	/* ── Shared render helpers ────────── */
