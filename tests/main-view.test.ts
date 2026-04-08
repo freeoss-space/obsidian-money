@@ -1,18 +1,33 @@
+// @vitest-environment happy-dom
 import { describe, it, expect } from "vitest";
+import { WorkspaceLeaf } from "obsidian";
 import { MoneyMainView } from "../src/views/main-view";
+
+/** Minimal plugin stub */
+function createPluginStub() {
+	return {
+		store: null,
+		openMainView: () => {},
+		openAddEntryModal: () => {},
+	} as unknown as import("../src/main").default;
+}
 
 /* ───────────────────────────────────────
    MainViewMode includes checklist
    ─────────────────────────────────────── */
 
 describe("MainViewMode", () => {
-	it("accepts 'checklist' as a valid mode handled by the main view", () => {
-		// The switch/case in render() should handle "checklist" without falling
-		// through to default. We verify by checking the exported type union includes it.
-		// Since vitest doesn't type-check, we inspect the render method source as a proxy.
-		const prototype = MoneyMainView.prototype as Record<string, unknown>;
-		// setMode is the public API; it accepts MainViewMode.
-		// This test will be truly validated by the build step (tsc -noEmit).
-		expect(typeof prototype.setMode).toBe("function");
+	it("renders checklist heading when mode is set to 'checklist'", async () => {
+		const leaf = new WorkspaceLeaf();
+		const plugin = createPluginStub();
+		const view = new MoneyMainView(leaf, plugin);
+
+		await view.onOpen();
+		view.setMode("checklist");
+
+		const container = view.containerEl.children[1] as HTMLElement;
+		const heading = container.querySelector(".money-view-title");
+		expect(heading).not.toBeNull();
+		expect(heading!.textContent?.trim()).toBe("Checklist");
 	});
 });

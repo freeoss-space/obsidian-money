@@ -40,7 +40,7 @@ describe("Sidebar: nav items", () => {
 		const container = view.containerEl.children[1] as HTMLElement;
 		const navNames = Array.from(
 			container.querySelectorAll(".money-navitem-name"),
-		).map((el) => el.textContent);
+		).map((el) => (el.textContent ?? "").trim());
 
 		expect(navNames).toContain("Checklist");
 	});
@@ -57,7 +57,7 @@ describe("Sidebar: nav items", () => {
 			container.querySelectorAll(".money-navitem-content"),
 		);
 		const checklistContent = navItems.find((el) =>
-			el.querySelector(".money-navitem-name")?.textContent === "Checklist",
+			(el.querySelector(".money-navitem-name")?.textContent ?? "").trim() === "Checklist",
 		) as HTMLElement | undefined;
 
 		expect(checklistContent).toBeDefined();
