@@ -1,7 +1,7 @@
 {
 	"id": "obsidian-money",
 	"name": "Money",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"minAppVersion": "0.15.0",
 	"description": "A budgeting and financial organizer for Obsidian",
 	"author": "freeoss-space",
