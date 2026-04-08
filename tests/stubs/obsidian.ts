@@ -35,6 +35,9 @@ export class Workspace {
 	getRightLeaf(_split: boolean): WorkspaceLeaf {
 		return new WorkspaceLeaf();
 	}
+	getLeftLeaf(_split: boolean): WorkspaceLeaf {
+		return new WorkspaceLeaf();
+	}
 	revealLeaf(_leaf: WorkspaceLeaf): void {}
 	detachLeavesOfType(_type: string): void {}
 	getLeaf(_newLeaf?: boolean | string): WorkspaceLeaf {
