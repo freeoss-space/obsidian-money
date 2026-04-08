@@ -25,6 +25,23 @@ beforeEach(async () => {
 });
 
 /* ───────────────────────────────────────
+   Sidebar: no auto-open on load
+   ─────────────────────────────────────── */
+
+describe("Sidebar: no auto-open on load", () => {
+	it("does not call openMainView automatically when the sidebar opens", async () => {
+		const leaf = new WorkspaceLeaf();
+		const plugin = createPluginStub(store);
+		const view = new MoneySidebarView(leaf, plugin);
+
+		await view.onOpen();
+
+		// Merely opening the sidebar must not auto-navigate to any view
+		expect(plugin.openMainView).not.toHaveBeenCalled();
+	});
+});
+
+/* ───────────────────────────────────────
    Sidebar: nav items
    ─────────────────────────────────────── */
 
